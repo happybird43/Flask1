@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>股票資訊頁</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="top">
+            <div class="homepage">
+                <form action="{{ url_for('home') }}">
+                    <button ID="home">
+                        <img src="../static/img/home.png" alt="首頁">
+                    </button>
+                </form>
+            </div>
+
+            <div class="topic">
+                <h1>新手選股篩選器</h1>
+                <i class="fa-solid fa-comments-dollar" style="color: #ffffff;"></i>
+            </div>
+
+            <!-- 股票搜索功能 -->
+            <div class="stocksearch">
+                <form method="POST" action="{{ url_for('result') }}">
+                    <!-- <label for="stock">股票搜索：</label> -->
+                    <input type="text" id="stock" name="stock" placeholder="輸入股票代碼">
+                    <input id="step5" type="submit" value="查詢個股資料">
+                    {% if error_message %}
+                    <script>
+                        window.alert("{{ error_message }}");
+                    </script>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- 導入股票號碼＆中文名 -->
+        <div class="individual">
+            <h2>{{stName}}</h2>
+            <h3>{{stID}}</h3>
+        </div>
+        <div id="stokck_chart" style="display: flex; align-items: center; justify-content: center;">
+            <!-- <div id="new-html-content">{{ html_content|safe }}</div> -->
+        </div>
+        <div class="basic">
+            <h2> 基本資訊 </h2>
+            <div class="stock">
+                {% if table_html %}
+                <table>
+
+                    <tbody id="table-body" class="table">
+                        {{ table_html | safe }}<!-- 股價內容 -->
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="Fundamentals">
+            <h2> 基本面 </h2>
+            <div class="stock">
+                {% if table2_html %}
+                <table>
+                    <tbody id="table2-body" class="table">
+
+                        {{ table2_html | safe }}<!-- 財報內容 -->
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <h2>讓金融融入生活，輕鬆完成資產配置</h2>
+        <div class="media">
+            <h3>更多資訊</h3>
+            <ul>
+                <!-- FB -->
+                <li><a href="#">
+                        <img src="../static/img/facebook.png" alt="Facebook">
+                    </a></li>
+                <!-- Twitter -->
+                <li><a href="#">
+                        <img src="../static/img/twitter.png" alt="Twitter">
+                    </a></li>
+                <!-- LINE -->
+                <li><a href="#">
+                        <img src="../static/img/line.png" alt="Line">
+                    </a></li>
+                <!-- IG -->
+                <li><a href="#">
+                        <img src="../static/img/instagram.png" alt="Instagram">
+                    </a></li>
+            </ul>
+        </div>
+        <h3>Copyright © 2023 新手選股篩選器 All Rights Deserve</h3>
+    </footer>
+</body>
+
+</html>

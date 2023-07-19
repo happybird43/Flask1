@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資產配置</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="top">
+            <div class="homepage">
+                <form action="{{ url_for('home') }}">
+                    <button ID="home">
+                        <img src="../static/img/home.png" alt="首頁">
+                    </button>
+                </form>
+            </div>
+
+            <div class="topic">
+                <h1>新手選股篩選器</h1>
+                <i class="fa-solid fa-comments-dollar" style="color: #ffffff;"></i>
+            </div>
+
+            <!-- 股票搜索功能 -->
+            <div class="stocksearch">
+                <form method="POST" action="{{ url_for('result') }}">
+                    <!-- <label for="stock">股票搜索：</label> -->
+                    <input type="text" id="stock" name="stock" placeholder="輸入股票代碼">
+                    <input id="step5" type="submit" value="查詢個股資料">
+                    {% if error_message %}
+                    <script>
+                        window.alert("{{ error_message }}");
+                    </script>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="kd">
+            <h2> KD指標參考 </h2>
+            <i class="info-index kdballoon" kdballoon-data="輔助判斷短期進出場，但因買入賣出訊號持續時間不一定，故僅提供參考"></i>
+            <div class="stock">
+                {% if tablekd_html %}
+                <table>
+                    <tbody>
+                        {{ tablekd_html | safe }}
+
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+            <div class="kdinfo">
+                <ul>
+                    <li>
+                        <p>黃金交叉：短期看跌的訊號</p>
+                    </li>
+                    <li>
+                        <p>死亡交叉：短期看漲的訊號</p>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <p>KD>80：超買區，股票短期強勢但可能要下跌了，不適合進場</p>
+                    </li>
+                    <li>
+                        <p>KD<20：超賣區，股票短期弱勢但可能要上漲了，適合進場</p>
+                    </li>
+                </ul>
+
+                <ul>
+                    <li>
+                        <p>連三天以上KD>80：出現高檔鈍化，股票不一定是要下跌，反而代表強勢股</p>
+                    </li>
+                    <li>
+                        <p>連三天以上KD<20：出現低檔鈍化，股票不一定是要上漲，反而代表弱勢股</p>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="assign">
+            <table class="assets">
+                <caption> 資產配置表 </caption>
+                <thead>
+                    <tr> <!-- 全選複選框 -->
+                        <th>
+                            <input type="checkbox" name="checkAll" id="check-all" checked />
+                            <label for="check-all">全選</label>
+                        </th>
+                        <th>股票代號</th>
+                        <th>股票名稱</th>
+                        <th>股價／元</th>
+                        <th>購買股數</th>
+                        <th>小計金額／元</th>
+                        <th>Beta值
+                            <i class="info balloon" id="beta"
+                                balloon-data="指個股的變動與大盤的連動性，若投資組合的Beta值越趨近於1，與大盤相關性越高，Beta值越高波動度越大"></i>
+                        </th>
+                        <th>Beta風險配置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if stocks_with_beta %}
+                    {% for stock, betavalue,name,price in stocks_with_beta %}
+                    <tr>
+
+                        <td>
+                            <input type="checkbox" name="item" value="SN-1020" checked />
+                        </td>
+                        <td class="s_id" data-stock-ids="{{ stock }}">{{ stock }}</td>
+                        <td class="s_name">{{ name }}</td>
+                        <td class="price">{{ price }}</td>
+                        <td><input type="number" min="0" value="1" /></td>
+                        <td class="amount" id="amount">xxxx</td>
+                        <td class="beta" data-data="{{ betavalue }}">{{ betavalue }}</td>
+                        <td class="amount2" id="beta2">xxxx</td>
+
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bolder; font-size: 1.2em">
+                        <td colspan="4">總計:</td>
+                        <td id="sum">xxxx</td>
+                        <td id="total-amount">xxxx</td>
+                        <td id="total-beta"></td>
+                        <td class="total-amount2" id="total_beta"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="chart">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+
+    </main>
+
+    <footer>
+        <h2>讓金融融入生活，輕鬆完成資產配置</h2>
+        <div class="media">
+            <h3>更多資訊</h3>
+            <ul>
+                <!-- FB -->
+                <li><a href="#">
+                        <img src="../static/img/facebook.png" alt="Facebook">
+                    </a></li>
+                <!-- Twitter -->
+                <li><a href="#">
+                        <img src="../static/img/twitter.png" alt="Twitter">
+                    </a></li>
+                <!-- LINE -->
+                <li><a href="#">
+                        <img src="../static/img/line.png" alt="Line">
+                    </a></li>
+                <!-- IG -->
+                <li><a href="#">
+                        <img src="../static/img/instagram.png" alt="Instagram">
+                    </a></li>
+            </ul>
+        </div>
+        <h3>Copyright © 2023 新手選股篩選器 All Rights Deserve</h3>
+    </footer>
+</body>
+
+<script>
+    const checkAll = document.querySelector('#check-all');
+    const checkItems = document.getElementsByName('item');
+    checkAll.onchange = ev => {
+        console.log(ev.target.checked);
+    };
+    checkAll.onchange = ev => {
+        console.log(ev.target.checked);
+        checkItems.forEach(item => item.checked = ev.target.checked);
+    };
+    checkItems.forEach(item => item.onchange = ev => {
+        checkAll.checked = Array.from(checkItems).every(checkItem => checkItem.checked);
+    });
+
+    // 获取价格和数量组成的数组
+    const priceLists = document.querySelectorAll('.price');
+    const numberLists = document.querySelectorAll('body input[type=number]');
+    // 獲取所有具有相同 class 屬性的元素
+
+    // 進行其他操作...
+    const priceArr = Array.from(priceLists).map(item => parseInt(item.textContent));
+    const numbersArr = Array.from(numberLists).map(item => parseInt(item.value));
+
+    console.log(priceArr);
+    console.log(numbersArr);
+    let amountArr = [priceArr, numbersArr].reduce((prev, curr) => prev.map((item, index) => item * curr[index])); console.log(amountArr); // [ 4799, 3999, 18999, 5999, 9699 ]
+
+    // 獲取單個商品總金額的元素數組 
+    const amountDOM = document.querySelectorAll('.amount');
+    amountDOM.forEach((item, index) => item.textContent = amountArr[index]);
+
+    let isChecked = []; checkItems.forEach(item => isChecked.push(item.checked === true ? 1 : 0));
+    // 列印出商品狀態值 
+    console.log(isChecked);
+
+    let checkedNumbers = [];
+    numbersArr.forEach((item, index) => checkedNumbers.push(item * isChecked[index]));
+    // 列印被選中的商品的數量 
+    console.log(checkedNumbers);
+
+    let checkedSum = checkedNumbers.reduce((prev, curr) => prev + curr);
+    // 將獲取的數量結果渲染到頁面中 
+    document.querySelector('#sum').textContent = checkedSum;
+
+    // 聲明一個數組用於存儲每一個被選中的商品的總金額 
+    let checkedPrice = []; checkedNumbers.forEach((item, index) => checkedPrice.push(item * priceArr[index]));
+    // 列印被選中的每個被選中的商品總金額 
+    console.log(checkedPrice);
+    // 計算被選中的商品總金額 
+    let totalAmount = checkedPrice.reduce((prev, curr) => prev + curr);
+    // 將選中的商品總金額渲染到頁面中 
+    document.querySelector('#total-amount').textContent = totalAmount;
+
+    function autoCalculate() {
+        // 獲取單價組成的數組 
+        const priceLists = document.querySelectorAll('.price');
+        const priceArr = Array.from(priceLists).map(item => parseInt(item.textContent));
+        // 獲取數量組成的數組 
+        const numberLists = document.querySelectorAll('body input[type=number]');
+        const numbersArr = Array.from(numberLists).map(item => parseInt(item.value));
+        console.log(priceArr, numbersArr);
+        // 由於拿到的表單里的數據都是string類型的，所以需要先將其轉換成int類型，因此需要使用`map()`方法操作一下 
+        let amountArr = [priceArr, numbersArr].reduce((prev, curr) => prev.map((item, index) => item * curr[index]));
+        console.log(amountArr);
+        const amountDOM = document.querySelectorAll('.amount');
+        amountDOM.forEach((item, index) => item.textContent = amountArr[index]);
+        // 首先聲明一個數組，用於存儲被選中的商品的狀態，如果被選中，值為1，未被選中，則為0 
+        let isChecked = []; checkItems.forEach(item => isChecked.push(item.checked === true ? 1 : 0));
+        console.log(isChecked);
+        // 聲明一個用於存儲是商品數量的數組，該數組的作用是：如果商品處於被選中的狀態，那麼就存儲它真實的數量值， 
+        // 如果沒有被選中，那麼數量就是0 
+        let checkedNumbers = []; numbersArr.forEach((item, index) => checkedNumbers.push(item * isChecked[index])); console.log(checkedNumbers);
+        // 此時，被選中的商品的總數為： 
+        let checkedSum = checkedNumbers.reduce((prev, curr) => prev + curr);
+        console.log(checkedSum);
+        // 將獲取的數量結果渲染到頁面中 
+        document.querySelector('#sum').textContent = checkedSum;
+        // 下面開始計算被選中的商品的總金額，該總金額等於上面所有被選中的商品的總金額之和。 
+        // 聲明一個數組用於存儲每一個被選中的商品的總金額 
+        let checkedPrice = []; checkedNumbers.forEach((item, index) => checkedPrice.push(item * priceArr[index]));
+        console.log(checkedPrice);
+        // 計算被選中的商品總金額 
+        let totalAmount = checkedPrice.reduce((prev, curr) => prev + curr);
+        // 將選中的商品總金額渲染到頁面中 
+        document.querySelector('#total-amount').textContent = totalAmount;
+        console.log('123')
+        var subtotalAmounts = Array.from(document.querySelectorAll('.amount')).map(function (amount) {
+            return parseFloat(amount.textContent);
+        });
+        pieChart.data.labels = stockNames;
+        pieChart.data.datasets[0].data = subtotalAmounts;
+        pieChart.update();
+
+        // 獲取所需元素的參考
+        var totalAmountElement = document.getElementById("total-amount");
+        var betaElements = document.getElementsByClassName("beta");
+        var totalAmountElement2 = document.getElementById("total_beta");
+        var totalAmount2 = 0;
+
+        // 定義計算 beta2 值的函數
+        function calculateBeta2() {
+            totalAmount2 = 0; // 重置 totalAmount2
+
+            // 迴圈遍歷每個 beta 元素
+            for (var i = 0; i < betaElements.length; i++) {
+                var betaElement = betaElements[i];
+                var amountElement = betaElement.parentNode.querySelector(".amount"); // 在父節點中查找對應的 amount 元素
+
+                // 做你想要的計算
+                var beta2 = (amountElement.textContent * betaElement.getAttribute("data-data")) / totalAmountElement.textContent;
+
+                // 顯示計算結果
+                var beta2Element = betaElement.nextElementSibling;
+                beta2Element.textContent = beta2.toFixed(4); // 保留四位小數
+                totalAmount2 += beta2; // 累加 beta2 值
+            }
+            console.log('value', totalAmount2)
+            totalAmountElement2.textContent = totalAmount2.toFixed(4); // 将 totalAmount2 的值设置为 totalAmountElement2 元素的内容
+        }
+
+
+
+
+
+        // 監聽總金額變化，當總金額改變時重新計算 beta2 值
+        totalAmountElement.addEventListener("input", calculateBeta2);
+
+        // 頁面載入完成後初始計算一次 beta2 值
+        calculateBeta2();
+
+
+    }
+    window.addEventListener("DOMContentLoaded", function () {
+        // 獲取所需元素的參考
+        var totalAmountElement = document.getElementById("total-amount");
+        var betaElements = document.getElementsByClassName("beta");
+        var totalAmountElement2 = document.getElementById("total_beta");
+        var totalAmount2 = 0;
+
+        // 定義計算 beta2 值的函數
+        function calculateBeta2() {
+            totalAmount2 = 0; // 重置 totalAmount2
+
+            // 迴圈遍歷每個 beta 元素
+            for (var i = 0; i < betaElements.length; i++) {
+                var betaElement = betaElements[i];
+                var amountElement = betaElement.parentNode.querySelector(".amount"); // 在父節點中查找對應的 amount 元素
+
+                // 做你想要的計算
+                var beta2 = (amountElement.textContent * betaElement.getAttribute("data-data")) / totalAmountElement.textContent;
+
+                // 顯示計算結果
+                var beta2Element = betaElement.nextElementSibling;
+                beta2Element.textContent = beta2.toFixed(4); // 保留四位小數
+                totalAmount2 += beta2; // 累加 beta2 值
+            }
+            console.log('value', totalAmount2)
+            totalAmountElement2.textContent = totalAmount2.toFixed(4); // 将 totalAmount2 的值设置为 totalAmountElement2 元素的内容
+        }
+
+
+
+
+
+        // 監聽總金額變化，當總金額改變時重新計算 beta2 值
+        totalAmountElement.addEventListener("input", calculateBeta2);
+
+        // 頁面載入完成後初始計算一次 beta2 值
+        calculateBeta2();
+    });
+
+
+
+
+
+
+
+    window.onload = autoCalculate;
+    // 監聽某個控制項的事件，首先需要拿到控制項元素。 
+    const numInput = document.querySelectorAll('body input[type=number]');
+    // 上面都用了onchange來監聽，這裡換個方法使用addEventListener。 
+    numInput.forEach(item => item.addEventListener('change', autoCalculate));
+
+    checkAll.onchange = ev => {
+        checkItems.forEach(item => item.checked = ev.target.checked);
+        // 解决勾选全选框不会自动计算的问题
+        autoCalculate();
+    };
+
+    checkItems.forEach(item => item.onchange = ev => {
+        checkAll.checked = Array.from(checkItems).every(checkItem => checkItem.checked);
+        // 解决勾选全选框不会自动计算的问题
+        autoCalculate();
+    });
+
+
+    // 获取股票名和小计金额  \\
+    var stockNames = Array.from(document.querySelectorAll('.s_name')).map(function (name) {
+        return name.textContent;
+    });
+    var subtotalAmounts = Array.from(document.querySelectorAll('.amount')).map(function (amount) {
+        return parseFloat(amount.textContent);
+    });
+    console.log('stockname=', stockNames)
+    console.log('amount=', subtotalAmounts)
+
+    //       \\
+    //         \\
+    // 绘制圆饼图 \\
+    var ctx = document.getElementById('pieChart').getContext('2d');
+    var pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: stockNames,
+            datasets: [{
+                data: subtotalAmounts,
+                backgroundColor: ['#D4C39B', '#AC958A', '#6B4A5E', '#8D3551', '#4A443D', '#BC3D3A', '#C75C2C', '#AEBB2E'],
+            }]
+        },
+        options: {
+            responsive: true,
+        }
+    });
+    var amountElements = document.querySelectorAll('.amount');
+    amountElements.forEach(function (element) {
+        element.addEventListener('change', updatePieChart);
+    });
+
+</script>
+
+</html>

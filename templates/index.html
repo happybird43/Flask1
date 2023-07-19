@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>首頁</title>
+
+</head>
+
+<body>
+    <header>
+        <div class="top">
+            <div class="homepage">
+                <form action="{{ url_for('home') }}">
+                    <button ID="home">
+                        <img src="../static/img/home.png" alt="首頁">
+                    </button>
+                </form>
+            </div>
+
+
+            <div class="topic">
+                <h1>新手選股篩選器</h1>
+                <i class="fa-solid fa-comments-dollar" style="color: #ffffff;"></i>
+            </div>
+
+            <!-- 股票搜索功能 -->
+            <div class="stocksearch">
+                <form method="POST" action="{{ url_for('result') }}">
+                    <!-- <label for="stock">股票搜索：</label> -->
+                    <input type="text" id="stock" name="stock" placeholder="輸入股票代碼">
+                    <input id="step5" type="submit" value="查詢個股資料">
+                    {% if error_message %}
+                    <script>
+                        window.alert("{{ error_message }}");
+                    </script>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="step" data-step="step1">Step 1 偏好產業別（單選）</h2>
+        <form method="POST" action="{{ url_for('receive_data') }}">
+            <div id="step1content" class="stepcontent">
+
+                <ul>
+                    <li>
+                        <input type="checkbox" id="industry1" name="types[]" value="鋼鐵工業">
+                        <label for="industry1">鋼鐵工業</label>
+                        <input type="checkbox" id="industry2" name="types[]" value="造紙工業">
+                        <label for="industry2">造紙工業</label>
+                        <input type="checkbox" id="industry3" name="types[]" value="電器電纜">
+                        <label for="industry3">電器電纜</label>
+                        <input type="checkbox" id="industry4" name="types[]" value="汽車工業">
+                        <label for="industry4">汽車工業</label>
+                        <input type="checkbox" id="industry5" name="types[]" value="水泥工業">
+                        <label for="industry5">水泥工業</label>
+                        <input type="checkbox" id="industry6" name="types[]" value="建材營造業">
+                        <label for="industry6">建材營造業</label>
+                        <input type="checkbox" id="industry7" name="types[]" value="其他電子業">
+                        <label for="industry7">其他電子業</label><br>
+
+                        <input type="checkbox" id="industry8" name="types[]" value="光電業">
+                        <label for="industry8">光電業</label>
+                        <input type="checkbox" id="industry9" name="types[]" value="化學工業">
+                        <label for="industry9">化學工業</label>
+                        <input type="checkbox" id="industry10" name="types[]" value="金融保險業">
+                        <label for="industry10">金融保險業</label>
+                        <input type="checkbox" id="industry11" name="types[]" value="其他業">
+                        <label for="industry11">其他業</label>
+                        <input type="checkbox" id="industry12" name="types[]" value="電子零組件業">
+                        <label for="industry12">電子零組件業</label>
+                        <input type="checkbox" id="industry13" name="types[]" value="通信網路業">
+                        <label for="industry13">通信網路業</label>
+                        <input type="checkbox" id="industry14" name="types[]" value="電子通路業">
+                        <label for="industry14">電子通路業</label><br>
+                        <input type="checkbox" id="industry15" name="types[]" value="航運業">
+                        <label for="industry15">航運業</label>
+                        <input type="checkbox" id="industry16" name="types[]" value="電腦及週邊設備業">
+                        <label for="industry16">電腦及週邊設備業</label>
+                        <input type="checkbox" id="industry17" name="types[]" value="玻璃陶瓷">
+                        <label for="industry17">玻璃陶瓷</label>
+                        <input type="checkbox" id="industry18" name="types[]" value="生技醫療業">
+                        <label for="industry18">生技醫療業</label>
+                        <input type="checkbox" id="industry19" name="types[]" value="油電燃氣業">
+                        <label for="industry19">油電燃氣業</label>
+                        <input type="checkbox" id="industry20" name="types[]" value="紡織纖維">
+                        <label for="industry20">紡織纖維</label>
+                        <input type="checkbox" id="industry21" name="types[]" value="電機機械">
+                        <label for="industry21">電機機械</label><br>
+                        <input type="checkbox" id="industry22" name="types[]" value="資訊服務業">
+                        <label for="industry22">資訊服務業</label>
+                        <input type="checkbox" id="industry23" name="types[]" value="塑膠工業">
+                        <label for="industry23">塑膠工業</label>
+                        <input type="checkbox" id="industry24" name="types[]" value="橡膠工業">
+                        <label for="industry24">橡膠工業</label>
+                        <input type="checkbox" id="industry25" name="types[]" value="貿易百貨業">
+                        <label for="industry25">貿易百貨業</label>
+                        <input type="checkbox" id="industry26" name="types[]" value="食品工業">
+                        <label for="industry26">食品工業</label>
+                        <input type="checkbox" id="industry27" name="types[]" value="半導體業">
+                        <label for="industry27">半導體業</label>
+                        <input type="checkbox" id="industry28" name="types[]" value="觀光事業">
+                        <label for="industry28">觀光事業</label>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- step2 內容 -->
+            <h2 class="step" data-step="step2">Step 2 量化分析：選取關注指標（單選）</h2>
+            <div id="step2content" class="stepcontent">
+
+                <ul class="financialReport">
+                    <li class="index">
+                        <h2>獲利能力比率</h2>
+                        <i class="info-index balloon"
+                            balloon-data="衡量一間公司的競爭力，也同時牽涉到經營效率和成長性；幫助你了解一間公司的基本成本結構，以及資本再投入的預期報酬"></i>
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="roa" name="rank" value="資產報酬率  (當季)">
+                        <label for="roa">總資產報酬率(ROA)</label>
+                        <i class="info balloon" balloon-data="衡量一間公司營運績效、賺錢的效率（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="roe" name="rank" value="股東權益報酬率  (當季)">
+                        <label for="roe">權益報酬率(ROE)</label>
+                        <i class="info balloon" balloon-data="公司運用自有資本的賺錢效率（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="eps" name="rank" value="每股稅後盈餘 (元)">
+                        <label for="eps">每股稅後盈餘(EPS)</label>
+                        <i class="info balloon" balloon-data="了解規模大小不同的公司幫股東賺錢能力的差異（同時考慮股價及本益比（PE）才具有意義） "></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="pe" name="rank" value="本益比">
+                        <label for="pe">本益比(PE)</label>
+                        <i class="info balloon" balloon-data="了解買進股票後，多久可以回本，並判斷股價現在是昂貴或是便宜"></i>
+
+                    </li>
+                </ul>
+                <ul class="financialReport">
+                    <li class="index">
+                        <h2>償債能力比率</h2>
+                        <i class="info-index balloon" balloon-data="財務體質、財務健康"></i>
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="cr" name="rank" value="流動比">
+                        <label for="cr">流動比率</label>
+                        <i class="info balloon" balloon-data="短期在還債方面的壓力（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="tie" name="rank" value="利息保障倍數">
+                        <label for="tie">利息保障倍數 (TIE)</label>
+                        <i class="info balloon" balloon-data="公司目前獲利能力是利息的幾倍，倍數越高，代表公司長期的償債能力越強（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="dr" name="rank" value="負債總額 (%)">
+                        <label for="dr">負債比率</label>
+                        <i class="info balloon"
+                            balloon-data="負債比率意思是一間公司的錢，有多少比例是借來的。 負債比率高可以提高資產運用的效率，但相對風險也高（越高風險越大） "></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="der" name="rank" value="負債權益比">
+                        <label for="der">負債權益比</label>
+                        <i class="info balloon" balloon-data="數字越高代表借錢的比率越高，自有資金也會比較少，因此對債權人而言比較無保障"></i>
+
+                    </li>
+                </ul>
+                <ul class="financialReport">
+                    <li class="index">
+                        <h2>經營效率比率</h2>
+                        <i class="info-index balloon" balloon-data="觀察公司各種經營狀況是否相較過去出現變動"></i>
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="itr" name="rank" value="存貨週轉率 (次/年)">
+                        <label for="itr">存貨週轉率</label>
+                        <i class="info balloon"
+                            balloon-data="可用來觀察一家公司產品的銷貨速度，評估經營效率。存貨周轉率高，代表公司資金的使用效率好、短期償債能力強（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" id="dso" name="rank" value="應收帳款週轉率 (次/年)">
+                        <label for="dso">應收帳款週轉率</label>
+                        <i class="info balloon" balloon-data="將公司回收應收帳款的速度量化，用以看出公司收回應收帳款或客戶欠款的效率（越高越好）"></i>
+
+                    </li>
+                    <li class="ratio">
+                        <input type="checkbox" name="rank" value="總資產週轉率 (次/年)">
+                        <label for="tar">總資產周轉率</label>
+                        <i class="info balloon" balloon-data="公司所有資產的使用效率，用來評估當公司投入1元資產，能產生多少銷貨收入（越高越好）"></i>
+
+                    </li>
+                </ul>
+                <button type="submit" class="step-button" id="showtable">確定</button>
+                <!-- </form> -->
+            </div>
+        </form>
+
+        <!-- step4 內容 -->
+        <h2 class="step" data-step="step4">Step 3 選取股票進行資產配置</h2>
+        <div id="step4content" class="stepcontent search">
+
+            <form method="POST" action="{{url_for('final')}}">
+                {% if table_html %}
+                <div class="tableContent">
+                    <h2> 產業股票資訊如下： </h2>
+                    <div class="avg">
+                        <p>查詢結果：共有{{q}}筆" {{name1}} "資料</p>
+                        <p>產業的 “ {{rank_value}}平均數 ”為 {{stock_avg}}</p>
+                    </div>
+                </div>
+                <div class="stocktable">
+                    <div class="stock">
+
+                        <table>
+                            <tbody id="table-body" class="table">
+                                {% if q %}
+                                {% if stock_avg %}
+
+                                {% endif %}
+                                {% endif %}
+                                {{ table_html | safe }}<!-- 股價內容 -->
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <button type="button" class="step-button" id="send" onclick="submitForm(event)">提交選擇</button>
+                </div>
+                {% endif %}
+
+                <div id="chooseStock"></div>
+                <button type="submit" class="step-button choose-button" id="FINAL" style="display: none;">確認選擇</button>
+            </form>
+
+
+        </div>
+   
+    </main>
+
+    <footer>
+        <h2>讓金融融入生活，輕鬆完成資產配置</h2>
+        <div class="media">
+            <h3>更多資訊</h3>
+            <ul>
+                <!-- FB -->
+                <li><a href="#">
+                        <img src="../static/img/facebook.png" alt="Facebook">
+                    </a></li>
+                <!-- Twitter -->
+                <li><a href="#">
+                        <img src="../static/img/twitter.png" alt="Twitter">
+                    </a></li>
+                <!-- LINE -->
+                <li><a href="#">
+                        <img src="../static/img/line.png" alt="Line">
+                    </a></li>
+                <!-- IG -->
+                <li><a href="#">
+                        <img src="../static/img/instagram.png" alt="Instagram">
+                    </a></li>
+            </ul>
+        </div>
+        <h3>Copyright © 2023 新手選股篩選器 All Rights Deserve</h3>
+    </footer>
+</body>
+<script>
+
+    const checkboxes = document.querySelectorAll('input[name="rank"]');
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('click', function () {
+            checkboxes.forEach((cb) => {
+                if (cb !== this) {
+                    cb.checked = false;
+                }
+            });
+        });
+    });
+    // 產業選擇(單選設定)
+    const checkboxstock = document.querySelectorAll('input[name="types[]"]');
+
+    checkboxstock.forEach((checkbox) => {
+        checkbox.addEventListener('click', function () {
+            checkboxstock.forEach((cb) => {
+                if (cb !== this) {
+                    cb.checked = false;
+                }
+            });
+        });
+    });
+
+    function submitForm(event) {
+        event.preventDefault();
+        const selectedItems = document.querySelectorAll('input[name="search"]:checked');
+        const selectedValues = Array.from(selectedItems).map(item => item.value);
+        var chooseButton = document.getElementById("FINAL");
+        chooseButton.style.display = "block";
+        console.log(selectedValues);
+
+
+        const chooseStockDiv = document.getElementById('chooseStock');
+        chooseStockDiv.innerHTML = ''; // 清空先前的内容
+        chooseStockDiv.style.display = "block";
+
+        const chooseContent = document.createElement('p');
+        chooseContent.textContent = '目前選擇的股票代號為';
+        chooseStockDiv.appendChild(chooseContent);
+
+
+        selectedValues.forEach((value, index) => {
+
+            const stockInfo = document.createElement('span');
+            stockInfo.textContent = value;
+            stockInfo.classList.add('stock-info');
+            chooseStockDiv.appendChild(stockInfo);
+
+            // 添加逗号或空格文本节点，除了最后一个值之后
+            if (index < selectedValues.length - 1) {
+                const separator = document.createTextNode(', '); // 逗號和空格
+                chooseStockDiv.appendChild(separator);
+            }
+        });
+    }
+
+
+</script>
+
+</html>
