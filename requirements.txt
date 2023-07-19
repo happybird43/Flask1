@@ -122,7 +122,7 @@ scipy==1.10.1
 seaborn==0.12.2
 simplejson==3.19.1
 six==1.16.0
-sklearn==0.0.post5
+scikit-learn==0.0.post5
 soupsieve==2.4.1
 SQLAlchemy==2.0.13
 stack-data==0.6.2
